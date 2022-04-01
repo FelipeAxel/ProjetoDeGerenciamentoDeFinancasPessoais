@@ -2,8 +2,10 @@ package com.axelfelipe.minhasfinancas.service.impl;
 
 import java.util.Optional;
 
+import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import com.axelfelipe.minhasfinancas.exception.ErroDeAutenticacao;
 import com.axelfelipe.minhasfinancas.exception.RegraNegocioException;
 import com.axelfelipe.minhasfinancas.model.entity.Usuario;
 import com.axelfelipe.minhasfinancas.model.repository.UsuarioRepository;
@@ -22,15 +24,24 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	public Usuario autenticar(String email, String senha) {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<Usuario> usuario=	repository.findByEmail(email);
+		
+		
+		if(!usuario.isPresent()) {
+			throw new ErroDeAutenticacao("Usuario nao encontrado");
+		}
+		if(usuario.get().getSenha().equals(senha)) {
+			throw new ErroDeAutenticacao("Senha invalida");
+		}
+		return usuario.get();
 	}
 
 
 	@Override
+	@Transactional
 	public Usuario salvarUsuario(Usuario usuario) {
-		// TODO Auto-generated method stub
-		return null;
+		validarEmail(usuario.getEmail());
+		return repository.save(usuario);
 	}
 
 

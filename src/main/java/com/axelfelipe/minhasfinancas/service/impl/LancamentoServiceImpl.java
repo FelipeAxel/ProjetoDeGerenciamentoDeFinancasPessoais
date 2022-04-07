@@ -82,7 +82,7 @@ public class LancamentoServiceImpl implements LancamentoService {
 
 		if (lancamento.getUsuario() == null || lancamento.getUsuario().getId() == null) {
 			throw new RegraNegocioException("Informe um Usuário.");
-		}
+		}    
 
 		if (lancamento.getValor() == null || lancamento.getValor().compareTo(BigDecimal.ZERO) < 1) {
 			throw new RegraNegocioException("Informe um Valor válido.");
@@ -99,10 +99,22 @@ public class LancamentoServiceImpl implements LancamentoService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional()
 	public BigDecimal obterSaldoPorUsuario(Long id) {
-
-		return null;
+		
+		BigDecimal receitas = repository.obterSaldoPorTipoLancamentoEUsuarioEStatus(id, TipoLancamento.RECEITA, StatusLancamento.EFETIVADO);
+		BigDecimal despesas = repository.obterSaldoPorTipoLancamentoEUsuarioEStatus(id, TipoLancamento.DESPESA, StatusLancamento.EFETIVADO);
+		
+		if(receitas == null) {
+			receitas = BigDecimal.ZERO;
+		}
+		
+		if(despesas == null) {
+			despesas = BigDecimal.ZERO;
+		}
+		
+		return receitas.subtract(despesas);
 	}
+
 
 }

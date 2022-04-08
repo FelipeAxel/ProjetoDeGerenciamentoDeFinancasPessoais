@@ -1,5 +1,6 @@
 package com.axelfelipe.minhasfinancas.service.impl;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -28,7 +29,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		
 		
 		if(!usuario.isPresent()) {
-			throw new ErroDeAutenticacao("Usuario nao encontrado");
+			throw new ErroDeAutenticacao("Usuario não encontrado para o email digitado");
 		}
 		if(!usuario.get().getSenha().equals(senha)) {
 			throw new ErroDeAutenticacao("Senha invalida");
@@ -57,5 +58,13 @@ public class UsuarioServiceImpl implements UsuarioService {
 	public Optional<Usuario> obterPorId(Long id) {
 		// TODO Auto-generated method stub
 		return repository.findById(id);
+	}
+
+
+	@Override
+	public void deletar(Usuario usuario) {
+		Objects.requireNonNull(usuario.getId());
+		repository.delete(usuario);
+		
 	}
 }

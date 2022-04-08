@@ -3,8 +3,11 @@ package com.axelfelipe.minhasfinancas.api.resource;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,5 +66,12 @@ public class UsuarioResource {
 		BigDecimal saldo = lancamentoService.obterSaldoPorUsuario(id);
 		return ResponseEntity.ok(saldo);
 	}
-	
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@DeleteMapping("{id}")
+	public ResponseEntity deletar(@PathVariable("id") Long id) {
+		return service.obterPorId(id).map(entidade -> {
+			service.deletar(entidade);
+			return new ResponseEntity(HttpStatus.NO_CONTENT);
+		}).orElseGet(() -> new ResponseEntity("Usuario já foi deletado da base de dados", HttpStatus.BAD_REQUEST));
+	}
 }

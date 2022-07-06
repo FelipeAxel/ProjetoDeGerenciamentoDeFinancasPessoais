@@ -9,11 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.axelfelipe.minhasfinancas.model.entity.Usuario;
+
 import com.axelfelipe.minhasfinancas.service.JwtService;
 import com.axelfelipe.minhasfinancas.service.impl.SecurityUserDetailsService;
 

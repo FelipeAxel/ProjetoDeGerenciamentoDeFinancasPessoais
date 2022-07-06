@@ -4,6 +4,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.axelfelipe.minhasfinancas.exception.ErroDeAutenticacao;
@@ -15,11 +17,13 @@ import com.axelfelipe.minhasfinancas.service.UsuarioService;
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
 	private UsuarioRepository repository;
+	private PasswordEncoder encoder;
 	
 	
-	public UsuarioServiceImpl(UsuarioRepository repository) {
+	public UsuarioServiceImpl(UsuarioRepository repository, PasswordEncoder encoder) {
 		super();
 		this.repository = repository;
+		this.encoder = encoder;
 	}
 
 
@@ -31,7 +35,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 		if(!usuario.isPresent()) {
 			throw new ErroDeAutenticacao("Usuario não encontrado para o email digitado");
 		}
-		if(!usuario.get().getSenha().equals(senha)) {
+		
+		boolean senhasBatem = encoder.matches(senha, usuario.get().getSenha());
+		if(!senhasBatem) {
 			throw new ErroDeAutenticacao("Senha invalida");
 		}
 		return usuario.get();
@@ -42,7 +48,15 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Transactional
 	public Usuario salvarUsuario(Usuario usuario) {
 		validarEmail(usuario.getEmail());
+		criptografarSenha(usuario);
 		return repository.save(usuario);
+	}
+
+
+	private void criptografarSenha(Usuario usuario) {
+		String senha = usuario.getSenha();
+		String senhaCripto = encoder.encode(senha);
+		usuario.setSenha(senhaCripto);
 	}
 
 
